@@ -1,0 +1,54 @@
+body
+{
+    margin: 20px;
+    font-family: "Helvetica", "Arial";
+    background-color: #111111;
+}
+
+#container
+{
+    
+}
+
+#ui
+{
+    width: 90%;
+    height: 600px;
+    background-color: #333333; 
+    color: white;
+    
+    
+}
+
+#status
+{
+    overflow: auto;
+    margin: 20px;
+}
+
+#mouse
+{
+    background-color: #222222;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 80%;
+    font-weight: bold;
+    line-height: 40%;
+    padding: 10px;
+    border-bottom: 1px solid #777777;
+}
+
+#status p
+{
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 80%;
+    font-weight: bold;
+    line-height: 40%;
+}
+
+#ui h1
+{
+    color: rgb(206, 206, 206);
+    font-weight: normal;
+    font-size: 200%;
+    text-transform: uppercase;
+}
