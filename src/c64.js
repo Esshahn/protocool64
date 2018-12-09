@@ -24,9 +24,9 @@ import $ from "jquery";
 
 export default class C64
 {
-    constructor(callback,background_color = "blue", border_color = "light_blue", factor = 1)
+    
+    constructor(callback,options = {background_color:"blue",border_color:"light_blue",charset_color:"light_blue",zoom:1}) //)
     {
-        this.status("c64 is initialized","system");
 
         this.colors = 
         {
@@ -47,9 +47,10 @@ export default class C64
         }
 
         this.callback = callback;
-        this.colram_color = background_color;
-        this.border_color = border_color;
-        this.zoom = 1;
+        this.colram_color = options.background_color;
+        this.border_color = options.border_color;
+        this.charset_color = options.charset_color;
+        this.zoom = options.zoom;
 
         this.c_display = document.createElement('canvas');
         this.c_display.id = "display";
@@ -71,23 +72,20 @@ export default class C64
         this.c_screen.width = 320;
         this.c_screen.height = 200;
 
-        let template = `<div id="output-canvas"></div>`;
-       
-        $("#container").append(template);
-        $("#output-canvas").append(this.c_display);
-
         this.display = this.c_display.getContext('2d', { alpha: false });
         this.border = this.c_border.getContext('2d', { alpha: false });
         this.colram = this.c_colram.getContext('2d', { alpha: false });
         this.screen = this.c_screen.getContext('2d', { alpha: true });
-
+        
+        this.load_charset("c64-charset.bin");
+        
         this.set_border_color(this.border_color);
         this.set_background_color(this.colram_color);
- 
-        this.load_charset("c64-charset.bin");
-        this.mouse_init();
+        this.scale(this.zoom);
+
+        $("#output-canvas").append(this.c_display);
         this.update();
-  
+        this.mouse_init();
     }
 
     check_color(color)
@@ -181,7 +179,7 @@ export default class C64
             }
           }
           this.charset_data = charset;
-          this.create_charset(charset,"yellow");
+          this.create_charset(charset,this.charset_color);
           this.callback();
         };
         
@@ -221,12 +219,18 @@ export default class C64
         
     }
 
-    set_char_color(color)
+    set_charset_color(color)
+    {
+        this.charset_color = this.colors[this.check_color(color)];
+        this.change_charset_color();
+    }
+
+    change_charset_color()
     {
         for(let i=0; i< this.charset.length; i++)
         {
             this.charset[i].ctx.globalCompositeOperation = 'source-in';
-            this.charset[i].ctx.fillStyle = this.colors[this.check_color(color)];
+            this.charset[i].ctx.fillStyle = this.charset_color;
             this.charset[i].ctx.fillRect(0,0,8,8);
         }
     }
@@ -267,7 +271,9 @@ export default class C64
     reset()
     {
         this.set_background_color("blue");
-        this.set_char_color("light_blue");
+        this.set_border_color("light_blue");
+        this.set_charset_color("light_blue");
+        
         this.print("**** commodore 64 basic v2 ****",4,1);
         this.print("64k ram system  38911 basic bytes free",1,3);
         this.print("ready.",0,5);
@@ -280,7 +286,7 @@ export default class C64
 
 
     get_mouse_position(event)
-    {
+    {  
         var rect = document.getElementById("display").getBoundingClientRect();
         var x_offset = (this.c_border.width - this.c_colram.width)/2 ;
         var y_offset = (this.c_border.height - this.c_colram.height)/2;
@@ -292,6 +298,7 @@ export default class C64
         var color_ram = ("$"+(55296 + yc*40 + xc).toString(16)).slice(-5);
         $("#mouse").html("X:"+x + " Y:"+ y + " | XC:" + xc + " YC:" + yc + " | SR:"+ screen_ram + " | CR:"+ color_ram);
     }
+
 
 
 }
