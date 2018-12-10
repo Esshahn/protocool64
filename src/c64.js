@@ -1,4 +1,4 @@
-import $ from "jquery";
+
 
 /*
 
@@ -81,9 +81,9 @@ export default class C64
         
         this.set_border_color(this.border_color);
         this.set_background_color(this.colram_color);
+        
+        document.getElementById("output-canvas").appendChild(this.c_display);
         this.scale(this.zoom);
-
-        $("#output-canvas").append(this.c_display);
         this.update();
         this.mouse_init();
     }
@@ -130,7 +130,8 @@ export default class C64
     scale(factor)
     {
         this.zoom = factor;
-        $("#display").css('width', this.c_display.width * factor);
+        document.getElementById("display").style.width = this.c_display.width * factor;
+
         this.status("scale: "+factor *100+"%","system");
     }
 
@@ -149,7 +150,7 @@ export default class C64
             default:
                 color = "white";
         }
-        $("#status").append('<p style = "color:'+color+';">'+message+'</p>');
+        document.getElementById("status").innerHTML += '<p style = "color:'+color+';">'+message+'</p>';
     }
 
     load_charset(filename)
@@ -296,7 +297,7 @@ export default class C64
         var yc = Math.floor(y/8);
         var screen_ram = ("$0"+(1024 + yc*40 + xc).toString(16)).slice(-5);
         var color_ram = ("$"+(55296 + yc*40 + xc).toString(16)).slice(-5);
-        $("#mouse").html("X:"+x + " Y:"+ y + " | XC:" + xc + " YC:" + yc + " | SR:"+ screen_ram + " | CR:"+ color_ram);
+        document.getElementById("mouse").innerHTML = "X:"+x + " Y:"+ y + " | XC:" + xc + " YC:" + yc + " | SR:"+ screen_ram + " | CR:"+ color_ram;
     }
 
 
