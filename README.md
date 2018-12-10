@@ -25,10 +25,10 @@ youTube video showing a very early proof of concept: <a href="https://www.youtub
 
 * Babel for transpiling ES6 into vanilla JS
 * webpack for bundling and instant compiling
-* jQuery
 
 ## How to build
 
 * clone repo
-* npm init
+* npm install
 * npm start
+* npm run build
