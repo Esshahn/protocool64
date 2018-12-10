@@ -21,6 +21,12 @@ A: goodbye sir. Or mam.
 
 youTube video showing a very early proof of concept: <a href="https://www.youtube.com/watch?v=hYd0mba_QnI">protocool64 on youTube</a>
 
+## How it works
+
+Instanciate protocool like let c64 = new Protocool();
+Now you can use some prototyping features like c64.set_border_color("white").
+Class documentation is on my todo list...
+
 ## Technology
 
 * Babel for transpiling ES6 into vanilla JS
