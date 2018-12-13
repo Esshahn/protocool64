@@ -75,17 +75,23 @@ export default class Protocool
         this.colram = this.c_colram.getContext('2d', { alpha: false });
         this.screen = this.c_screen.getContext('2d', { alpha: true });
         
-        this.set_border_color(this.computer.border_color);
-        this.set_background_color(this.computer.colram_color);
-        
         document.getElementById("output-canvas").appendChild(this.c_display);
-        this.scale(this.zoom);
-        this.update();
-        this.mouse_init();
-        this.load_charset("./files/c64-charset.bin");
+        
+        this.setup();
         
     }
 
+    async setup()
+    {
+        await this.load_charset("./files/c64-charset.bin");
+        this.set_border_color(this.computer.border_color);
+        this.set_background_color(this.computer.colram_color);
+        this.scale(this.zoom);
+        this.update();
+        this.mouse_init();
+        this.reset();
+        this.callback();
+    }
 
     check_color(color)
     {
@@ -152,9 +158,7 @@ export default class Protocool
     { 
         let array_buffer = await this.load({url:filename,type:'binary'});
         let charset = this.convert_charset(array_buffer);
-        this.create_charset(charset,this.computer.charset_color);
-        this.reset();
-        this.callback();
+        this.create_charset(charset,this.computer.charset_color);        
     }
 
     convert_charset(array_buffer)
