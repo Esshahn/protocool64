@@ -22,21 +22,23 @@
 
 */
 
-export default class C64
+import { get_config } from "./config.js";
+
+export default class Protocool
 {
     
-    constructor(callback,options = {background_color:"blue",border_color:"light_blue",charset_color:"light_blue",zoom:1}) //)
+    constructor(callback,options) //)
     {
+        
+        this.computers = get_config();
 
-        this.colors = 
-        {
-            black:"#000000",white:"#ffffff",red:"#67372d",cyan:"#73a3b1",
-            purple:"#6e3e83",green:"#5b8d48",blue:"#362976",yellow:"#b7c576",
-            orange:"#6c4f2a",brown:"#423908",light_red:"#98675b",dark_grey:"#444444",
-            grey:"#6c6c6c",light_green:"#9dd28a",light_blue:"#6d5fb0",light_grey:"#959595"
-        }
+        if(!options.computer) options.computer = "c64";
+        if(!options.zoom) options.zoom = 1;
 
-        this.charmap =
+        this.computer = this.computers [options.computer];
+        this.zoom = options.zoom;
+        
+        this.computer.charmap =
         {
             "@":0, "A":1, "B":2, "C":3, "D":4, "E":5, "F":6, "G":7, "H":8, "I":9, "J":10,
             "K":11, "L":12, "M":13, "N":14, "O":15, "P":16, "Q":17, "R":18, "S":19, "T":20,
@@ -46,54 +48,49 @@ export default class C64
             "=":61, "?":63
         }
 
-        this.callback = callback;
-        this.colram_color = options.background_color;
-        this.border_color = options.border_color;
-        this.charset_color = options.charset_color;
-        this.zoom = options.zoom;
-
         this.c_display = document.createElement('canvas');
         this.c_display.id = "display";
-        this.c_display.width = 384;
-        this.c_display.height = 272;
+        this.c_display.width = this.computer["outer_width"];
+        this.c_display.height = this.computer["outer_height"];
 
         this.c_border = document.createElement('canvas');
         this.c_border.id = "border";
-        this.c_border.width = 384;
-        this.c_border.height = 272;
+        this.c_border.width = this.computer["outer_width"];
+        this.c_border.height = this.computer["outer_height"];
 
         this.c_colram = document.createElement('canvas');
         this.c_colram.id = "colram";
-        this.c_colram.width = 320;
-        this.c_colram.height = 200;
+        this.c_colram.width = this.computer["width"];
+        this.c_colram.height = this.computer["height"];
 
         this.c_screen = document.createElement('canvas');
         this.c_screen.id = "screen";
-        this.c_screen.width = 320;
-        this.c_screen.height = 200;
+        this.c_screen.width = this.computer["width"];
+        this.c_screen.height = this.computer["outer_height"];
 
         this.display = this.c_display.getContext('2d', { alpha: false });
         this.border = this.c_border.getContext('2d', { alpha: false });
         this.colram = this.c_colram.getContext('2d', { alpha: false });
         this.screen = this.c_screen.getContext('2d', { alpha: true });
         
-        this.load_charset("c64-charset.bin");
-        
-        this.set_border_color(this.border_color);
-        this.set_background_color(this.colram_color);
+        this.set_border_color(this.computer.border_color);
+        this.set_background_color(this.computer.colram_color);
         
         document.getElementById("output-canvas").appendChild(this.c_display);
         this.scale(this.zoom);
         this.update();
         this.mouse_init();
+
+        this.load_charset("c64-charset.bin",callback);
     }
+
 
     check_color(color)
     {
         // checks if color is either a string or a number
         if (typeof color === "number") 
         {
-            return Object.keys(this.colors)[color];
+            return Object.keys(this.computer.colors)[color];
         } else {
             return color;
         }
@@ -101,21 +98,17 @@ export default class C64
 
 
     set_border_color(color)
-    {
-        
-        this.border_color = this.check_color(color);
-        this.border.fillStyle = this.colors[this.border_color];
+    {  
+        this.computer.border_color = this.check_color(color);
+        this.border.fillStyle = this.computer.colors[this.computer.border_color];
         this.border.fillRect(0, 0, this.c_border.width, this.c_border.height);
         this.update();
- 
     }
 
     set_background_color(color)
     {
-
-        this.colram_color = this.check_color(color); 
-
-        this.colram.fillStyle = this.colors[this.colram_color];
+        this.computer.colram_color = this.check_color(color); 
+        this.colram.fillStyle = this.computer.colors[this.computer.colram_color];
         this.colram.fillRect(0, 0, this.c_colram.width, this.c_colram.height);
         this.update();
     }
@@ -123,16 +116,15 @@ export default class C64
     update()
     {
         this.display.drawImage(this.c_border,0,0);
-        this.display.drawImage(this.c_colram,32,35);
-        this.display.drawImage(this.c_screen,32,35);
+        this.display.drawImage(this.c_colram,(this.computer["outer_width"]-this.computer["width"])/2,(this.computer["outer_height"]-this.computer["height"])/2);
+        this.display.drawImage(this.c_screen,(this.computer["outer_width"]-this.computer["width"])/2,(this.computer["outer_height"]-this.computer["height"])/2);
     }
 
     scale(factor)
     {
         this.zoom = factor;
-        document.getElementById("display").style.width = this.c_display.width * factor;
-
-        this.status("scale: "+factor *100+"%","system");
+        document.getElementById("display").style.width = this.c_display.width * this.zoom +"px";
+        this.status("scale: "+this.zoom *100+"%","system");
     }
 
     status(message,level)
@@ -153,7 +145,7 @@ export default class C64
         document.getElementById("status").innerHTML += '<p style = "color:'+color+';">'+message+'</p>';
     }
 
-    load_charset(filename)
+    load_charset(filename,callback)
     {  
         var oReq = new XMLHttpRequest();
         oReq.open("GET", "./files/"+filename, true);
@@ -161,7 +153,7 @@ export default class C64
         let charset_bytes = [];
         let charset = [];
         
-        oReq.onload = (oEvent) => {
+        oReq.onload =  (oEvent) => {
           var arrayBuffer = oReq.response; // Note: not oReq.responseText
           if (arrayBuffer) {
             var byteArray = new Uint8Array(arrayBuffer);
@@ -180,8 +172,8 @@ export default class C64
             }
           }
           this.charset_data = charset;
-          this.create_charset(charset,this.charset_color);
-          this.callback();
+          this.create_charset(charset,this.computer.charset_color);
+          callback();
         };
         
         oReq.send(null);
@@ -191,12 +183,10 @@ export default class C64
 
     create_charset(charset,color)
     {
-  
         this.charset = [];
         color = this.check_color(color);
 
         let char;
-        
         for (let chars = 0; chars < charset.length; chars++)
         {
 
@@ -205,7 +195,7 @@ export default class C64
             char.width = 8;
             char.height = 8;
             char.ctx = char.getContext('2d');
-            char.ctx.fillStyle = this.colors[color];
+            char.ctx.fillStyle = this.computer.colors[color];
             
             for(let y=0; y<8; y++)
             {
@@ -217,12 +207,11 @@ export default class C64
             
             this.charset.push(char);
         }
-        
     }
 
     set_charset_color(color)
     {
-        this.charset_color = this.colors[this.check_color(color)];
+        this.computer.charset_color = this.computer.colors[this.check_color(color)];
         this.change_charset_color();
     }
 
@@ -231,7 +220,7 @@ export default class C64
         for(let i=0; i< this.charset.length; i++)
         {
             this.charset[i].ctx.globalCompositeOperation = 'source-in';
-            this.charset[i].ctx.fillStyle = this.charset_color;
+            this.charset[i].ctx.fillStyle = this.computer.charset_color;
             this.charset[i].ctx.fillRect(0,0,8,8);
         }
     }
@@ -247,7 +236,7 @@ export default class C64
 
         for (let i=0; i<text.length;i++)
         {
-            let character = this.charmap[text[i].toUpperCase()];
+            let character = this.computer.charmap[text[i].toUpperCase()];
             if (use_high_charset) character+= 128;
             this.clear_char(x+i,y);
             this.screen.drawImage(this.charset[character],x*8+8*i,y*8);
@@ -271,13 +260,15 @@ export default class C64
 
     reset()
     {
-        this.set_background_color("blue");
-        this.set_border_color("light_blue");
-        this.set_charset_color("light_blue");
+        this.set_background_color(this.computer["colram_color_default"]);
+        this.set_border_color(this.computer["border_color_default"]);
+        this.set_charset_color(this.computer["charset_color_default"]);
         
-        this.print("**** commodore 64 basic v2 ****",4,1);
-        this.print("64k ram system  38911 basic bytes free",1,3);
-        this.print("ready.",0,5);
+        for (let line=0; line < this.computer.reset_text.length; line++)
+        {
+            this.print(this.computer.reset_text[line][0],this.computer.reset_text[line][1],this.computer.reset_text[line][2]);
+        }
+
     }
 
     mouse_init()
@@ -299,7 +290,6 @@ export default class C64
         var color_ram = ("$"+(55296 + yc*40 + xc).toString(16)).slice(-5);
         document.getElementById("mouse").innerHTML = "X:"+x + " Y:"+ y + " | XC:" + xc + " YC:" + yc + " | SR:"+ screen_ram + " | CR:"+ color_ram;
     }
-
 
 
 }
