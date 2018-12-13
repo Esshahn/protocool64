@@ -1,24 +1,8 @@
-
-
 /*
 
-    TODO
-
-    - set screen ram (print_char at $xxxx)
-    - set color ram (print_char at $xxxx)
-
-
-
-*/
-
-/*
-
-        C64 Class
+        Protocool Class
         generates a canvas that mimics a C64 screen
         and provides basic prototyping features for creating C64 games
-
-        usage
-        let machine = new C64(background color, border color)
 
 */
 
@@ -32,7 +16,7 @@ export default class Protocool
     {
         this.load = require('load-asset');
         this.computers = get_config();
-        this.callback = callback;
+        this._callback = callback;
 
         if(!options.computer) options.computer = "c64";
         if(!options.zoom) options.zoom = 1;
@@ -87,10 +71,9 @@ export default class Protocool
         this.set_border_color(this.computer.border_color);
         this.set_background_color(this.computer.colram_color);
         this.scale(this.zoom);
-        this.update();
         this._mouse_init();
         this.reset();
-        this.callback();
+        this._callback();
     }
 
     _check_color(color)
@@ -104,6 +87,15 @@ export default class Protocool
         }
     }
 
+    random(number)
+    {
+        return Math.floor(Math.random()*number);
+    }
+
+    get_colors()
+    {
+        return Object.keys(this.computer.colors).length;
+    }
 
     set_border_color(color)
     {  
@@ -278,7 +270,6 @@ export default class Protocool
         {
             this.print(this.computer.reset_text[line][0],this.computer.reset_text[line][1],this.computer.reset_text[line][2]);
         }
-
     }
 
     _mouse_init()
