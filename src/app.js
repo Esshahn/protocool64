@@ -1,11 +1,11 @@
-import "@babel/polyfill";
+
 import Protocool from './Protocool';
 
 let c64 = new Protocool(start,{computer:"c64",zoom:2});
 
 
 function start(){
-    c64.reset();
+    
     c64.print("playing around with protocool64",5,10);
 
     //interrupt();

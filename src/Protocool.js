@@ -23,19 +23,21 @@
 */
 
 import { get_config } from "./config.js";
+import "@babel/polyfill";
 
 export default class Protocool
 {
     
     constructor(callback,options) //)
     {
-        
+        this.load = require('load-asset');
         this.computers = get_config();
+        this.callback = callback;
 
         if(!options.computer) options.computer = "c64";
         if(!options.zoom) options.zoom = 1;
 
-        this.computer = this.computers [options.computer];
+        this.computer = this.computers[options.computer];
         this.zoom = options.zoom;
         
         this.computer.charmap =
@@ -80,8 +82,8 @@ export default class Protocool
         this.scale(this.zoom);
         this.update();
         this.mouse_init();
-
-        this.load_charset("c64-charset.bin",callback);
+        this.load_charset("./files/c64-charset.bin");
+        
     }
 
 
@@ -145,44 +147,41 @@ export default class Protocool
         document.getElementById("status").innerHTML += '<p style = "color:'+color+';">'+message+'</p>';
     }
 
-    load_charset(filename,callback)
-    {  
-        var oReq = new XMLHttpRequest();
-        oReq.open("GET", "./files/"+filename, true);
-        oReq.responseType = "arraybuffer";
-        let charset_bytes = [];
-        let charset = [];
-        
-        oReq.onload =  (oEvent) => {
-          var arrayBuffer = oReq.response; // Note: not oReq.responseText
-          if (arrayBuffer) {
-            var byteArray = new Uint8Array(arrayBuffer);
-            var line_counter = 0;
-            for (var i = 0; i < byteArray.byteLength; i++) {
-                let binary = ("0000000" + byteArray[i].toString(2)).slice(-8);
-                charset_bytes.push(binary);
 
-                line_counter ++;
-                if (line_counter == 8)
-                {
-                    charset.push(charset_bytes);
-                    line_counter = 0;
-                    charset_bytes = [];
-                }
+    async load_charset(filename)
+    { 
+        let array_buffer = await this.load({url:filename,type:'binary'});
+        let charset = this.convert_charset(array_buffer);
+        this.create_charset(charset,this.computer.charset_color);
+        this.reset();
+        this.callback();
+    }
+
+    convert_charset(array_buffer)
+    {
+        let charset_bytes = [];
+        let charset = []; 
+        var byte_array = new Uint8Array(array_buffer);
+        var line_counter = 0;
+        for (var i = 0; i < byte_array.byteLength; i++) 
+        {
+            let binary = ("0000000" + byte_array[i].toString(2)).slice(-8);
+            charset_bytes.push(binary);
+
+            line_counter ++;
+            if (line_counter == 8)
+            {
+                charset.push(charset_bytes);
+                line_counter = 0;
+                charset_bytes = [];
             }
-          }
-          this.charset_data = charset;
-          this.create_charset(charset,this.computer.charset_color);
-          callback();
-        };
-        
-        oReq.send(null);
-        this.status("charset data loaded","system");
-        
+        }
+        return charset;
     }
 
     create_charset(charset,color)
     {
+        
         this.charset = [];
         color = this.check_color(color);
 
@@ -207,6 +206,7 @@ export default class Protocool
             
             this.charset.push(char);
         }
+        
     }
 
     set_charset_color(color)
@@ -268,7 +268,6 @@ export default class Protocool
         {
             this.print(this.computer.reset_text[line][0],this.computer.reset_text[line][1],this.computer.reset_text[line][2]);
         }
-
     }
 
     mouse_init()
@@ -289,6 +288,17 @@ export default class Protocool
         var screen_ram = ("$0"+(1024 + yc*40 + xc).toString(16)).slice(-5);
         var color_ram = ("$"+(55296 + yc*40 + xc).toString(16)).slice(-5);
         document.getElementById("mouse").innerHTML = "X:"+x + " Y:"+ y + " | XC:" + xc + " YC:" + yc + " | SR:"+ screen_ram + " | CR:"+ color_ram;
+    }
+
+
+
+    async load_asset (url,type) 
+    {
+        // https://github.com/mattdesl/load-asset
+
+        let asset = await this.load({url:url,type:type});
+        console.log(asset);
+        return asset;
     }
 
 
