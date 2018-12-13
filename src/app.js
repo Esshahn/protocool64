@@ -5,7 +5,7 @@ let c64 = new Protocool(start,{computer:"c64",zoom:2});
 
 
 function start(){
-    
+    c64.set_charset_color("white");
     c64.print("playing around with protocool64",5,10);
 
     //interrupt();

@@ -88,12 +88,12 @@ export default class Protocool
         this.set_background_color(this.computer.colram_color);
         this.scale(this.zoom);
         this.update();
-        this.mouse_init();
+        this._mouse_init();
         this.reset();
         this.callback();
     }
 
-    check_color(color)
+    _check_color(color)
     {
         // checks if color is either a string or a number
         if (typeof color === "number") 
@@ -107,7 +107,7 @@ export default class Protocool
 
     set_border_color(color)
     {  
-        this.computer.border_color = this.check_color(color);
+        this.computer.border_color = this._check_color(color);
         this.border.fillStyle = this.computer.colors[this.computer.border_color];
         this.border.fillRect(0, 0, this.c_border.width, this.c_border.height);
         this.update();
@@ -115,10 +115,15 @@ export default class Protocool
 
     set_background_color(color)
     {
-        this.computer.colram_color = this.check_color(color); 
+        this.computer.colram_color = this._check_color(color); 
         this.colram.fillStyle = this.computer.colors[this.computer.colram_color];
         this.colram.fillRect(0, 0, this.c_colram.width, this.c_colram.height);
         this.update();
+    }
+
+    clear()
+    { 
+        this.screen.clearRect(0, 0, this.computer.width, this.computer.height);
     }
 
     update()
@@ -157,11 +162,11 @@ export default class Protocool
     async load_charset(filename)
     { 
         let array_buffer = await this.load({url:filename,type:'binary'});
-        let charset = this.convert_charset(array_buffer);
-        this.create_charset(charset,this.computer.charset_color);        
+        let charset = this._convert_charset(array_buffer);
+        this._create_charset(charset,this.computer.charset_color);        
     }
 
-    convert_charset(array_buffer)
+    _convert_charset(array_buffer)
     {
         let charset_bytes = [];
         let charset = []; 
@@ -183,11 +188,11 @@ export default class Protocool
         return charset;
     }
 
-    create_charset(charset,color)
+    _create_charset(charset,color)
     {
         
         this.charset = [];
-        color = this.check_color(color);
+        color = this._check_color(color);
 
         let char;
         for (let chars = 0; chars < charset.length; chars++)
@@ -215,7 +220,7 @@ export default class Protocool
 
     set_charset_color(color)
     {
-        this.computer.charset_color = this.computer.colors[this.check_color(color)];
+        this.computer.charset_color = this.computer.colors[this._check_color(color)];
         this.change_charset_color();
     }
 
@@ -264,6 +269,7 @@ export default class Protocool
 
     reset()
     {
+        this.clear();
         this.set_background_color(this.computer["colram_color_default"]);
         this.set_border_color(this.computer["border_color_default"]);
         this.set_charset_color(this.computer["charset_color_default"]);
@@ -272,15 +278,16 @@ export default class Protocool
         {
             this.print(this.computer.reset_text[line][0],this.computer.reset_text[line][1],this.computer.reset_text[line][2]);
         }
+
     }
 
-    mouse_init()
+    _mouse_init()
     {
-        this.c_display.addEventListener('mousemove', this.get_mouse_position.bind(this), false);
+        this.c_display.addEventListener('mousemove', this._get_mouse_position.bind(this), false);
     }
 
 
-    get_mouse_position(event)
+    _get_mouse_position(event)
     {  
         var rect = document.getElementById("display").getBoundingClientRect();
         var x_offset = (this.c_border.width - this.c_colram.width)/2 ;
