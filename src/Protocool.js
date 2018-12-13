@@ -287,8 +287,8 @@ export default class Protocool
         var y = Math.floor((event.clientY - rect.top) / this.zoom - y_offset);
         var xc = Math.floor(x/8);
         var yc = Math.floor(y/8);
-        var screen_ram = ("$0"+(1024 + yc*40 + xc).toString(16)).slice(-5);
-        var color_ram = ("$"+(55296 + yc*40 + xc).toString(16)).slice(-5);
+        var screen_ram = "$" + ("0"+(this.computer["screenram_address"] + yc*40 + xc).toString(16)).slice(-4);
+        var color_ram = "$" + ("0"+(this.computer["colram_address"] + yc*40 + xc).toString(16)).slice(-4);
         document.getElementById("mouse").innerHTML = "X:"+x + " Y:"+ y + " | XC:" + xc + " YC:" + yc + " | SR:"+ screen_ram + " | CR:"+ color_ram;
     }
 

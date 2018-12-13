@@ -26,7 +26,9 @@ export function get_config()
             "chars_y": 25,
             "colram_color_default": "blue",
             "border_color_default": "light_blue",
-            "charset_color_default": "light_blue"
+            "charset_color_default": "light_blue",
+            "colram_address": 55296,
+            "screenram_address": 1024 
         },
         "c128":
         {
@@ -53,7 +55,9 @@ export function get_config()
             "chars_y": 25,
             "colram_color_default": "grey",
             "border_color_default": "light_green",
-            "charset_color_default": "light_green"
+            "charset_color_default": "light_green",
+            "colram_address": 55296,
+            "screenram_address": 1024 
         },
         "c16":
         {
@@ -89,7 +93,9 @@ export function get_config()
             "chars_y": 25,
             "colram_color_default": 113,
             "border_color_default": 110,
-            "charset_color_default": 0
+            "charset_color_default": 0,
+            "colram_address": 2048,
+            "screenram_address": 3072 
         },
         "plus/4":
         {
@@ -126,7 +132,9 @@ export function get_config()
             "chars_y": 25,
             "colram_color_default": 113,
             "border_color_default": 110,
-            "charset_color_default": 0
+            "charset_color_default": 0,
+            "colram_address": 2048,
+            "screenram_address": 3072 
         }
     }
 

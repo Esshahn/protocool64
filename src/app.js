@@ -1,7 +1,7 @@
 
 import Protocool from './Protocool';
 
-let machine = new Protocool(start,{computer:"plus/4",zoom:2});
+let machine = new Protocool(start,{computer:"c16",zoom:2});
 
 function start(){
     interrupt();
