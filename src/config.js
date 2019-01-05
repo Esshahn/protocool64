@@ -22,13 +22,14 @@ export function get_config()
             "height": 200,
             "outer_width": 384,
             "outer_height": 272,
-            "chars_x": 40,
-            "chars_y": 25,
+            "columns": 40,
+            "rows": 25,
             "colram_color_default": "blue",
             "border_color_default": "light_blue",
             "charset_color_default": "light_blue",
             "colram_address": 55296,
-            "screenram_address": 1024 
+            "screenram_address": 1024,
+            "charset": "./files/c64-charset.bin"
         },
         "c128":
         {
@@ -51,13 +52,14 @@ export function get_config()
             "height": 200,
             "outer_width": 384,
             "outer_height": 272,
-            "chars_x": 40,
-            "chars_y": 25,
+            "columns": 40,
+            "rows": 25,
             "colram_color_default": "grey",
             "border_color_default": "light_green",
             "charset_color_default": "light_green",
             "colram_address": 55296,
-            "screenram_address": 1024 
+            "screenram_address": 1024,
+            "charset": "./files/c64-charset.bin"
         },
         "c16":
         {
@@ -89,13 +91,14 @@ export function get_config()
             "height": 200,
             "outer_width": 384,
             "outer_height": 272,
-            "chars_x": 40,
-            "chars_y": 25,
+            "columns": 40,
+            "rows": 25,
             "colram_color_default": 113,
             "border_color_default": 110,
             "charset_color_default": 0,
             "colram_address": 2048,
-            "screenram_address": 3072 
+            "screenram_address": 3072,
+            "charset": "./files/c64-charset.bin"
         },
         "plus/4":
         {
@@ -128,13 +131,42 @@ export function get_config()
             "height": 200,
             "outer_width": 384,
             "outer_height": 272,
-            "chars_x": 40,
-            "chars_y": 25,
+            "columns": 40,
+            "rows": 25,
             "colram_color_default": 113,
             "border_color_default": 110,
             "charset_color_default": 0,
             "colram_address": 2048,
-            "screenram_address": 3072 
+            "screenram_address": 3072,
+            "charset": "./files/c64-charset.bin"
+        },
+        "vc20":
+        {
+            "colors":
+            {
+                black:"#000000",white:"#ffffff",red:"#6D2327",cyan:"#A0FEF8",
+                purple:"#8E3C97",green:"#7EDA75",blue:"#252390",yellow:"#FFFF86",
+                orange:"#A4643B",brown:"#FFC8A1",light_red:"#F2A7AB",dark_grey:"#DBFFFF",
+                grey:"#FFB4FF",light_green:"#D7FFCE",light_blue:"#9D9AFF",light_grey:"#FFFFC9"  
+            },
+            "reset_text":
+            [ 
+                ["**** cbm basic v2 ****",0,0],
+                ["3583 bytes free",0,2],
+                ["ready.",0,4]
+            ],
+            "width": 176,
+            "height": 184,
+            "outer_width": 384,
+            "outer_height": 272,
+            "columns": 22,
+            "rows": 23,
+            "colram_color_default": 1,
+            "border_color_default": 3,
+            "charset_color_default": 6,
+            "colram_address": 38400,
+            "screenram_address": 7680,
+            "charset": "./files/vc20-charset.bin"
         }
     }
 

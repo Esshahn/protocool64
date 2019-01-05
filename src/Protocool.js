@@ -46,28 +46,31 @@ export default class Protocool
 
         this.c_colram = document.createElement('canvas');
         this.c_colram.id = "colram";
-        this.c_colram.width = this.computer["width"];
-        this.c_colram.height = this.computer["height"];
+        this.c_colram.width = this.computer.width * 320/this.computer.width;
+        this.c_colram.height = this.computer.height;
 
         this.c_screen = document.createElement('canvas');
         this.c_screen.id = "screen";
-        this.c_screen.width = this.computer["width"];
-        this.c_screen.height = this.computer["outer_height"];
+        this.c_screen.width = this.computer.width * 320/this.computer.width;
+        this.c_screen.height = this.computer.outer_height;
 
         this.display = this.c_display.getContext('2d', { alpha: false });
         this.border = this.c_border.getContext('2d', { alpha: false });
         this.colram = this.c_colram.getContext('2d', { alpha: false });
         this.screen = this.c_screen.getContext('2d', { alpha: true });
         
+        this.colram.scale(320/this.computer.width,1);
+        this.screen.scale(320/this.computer.width,1);
+
         document.getElementById("output-canvas").appendChild(this.c_display);
         
-        this.setup();
+        this.setup(this.computer.charset);
         
     }
 
-    async setup()
+    async setup(charset)
     {
-        await this.load_charset("./files/c64-charset.bin");
+        await this.load_charset(charset);
         this.set_border_color(this.computer.border_color);
         this.set_background_color(this.computer.colram_color);
         this.scale(this.zoom);
@@ -97,6 +100,16 @@ export default class Protocool
         return Object.keys(this.computer.colors).length;
     }
 
+    get_columns()
+    {
+        return this.computer.columns;
+    }
+
+    get_rows()
+    {
+        return this.computer.rows;
+    }
+
     set_border_color(color)
     {  
         this.computer.border_color = this._check_color(color);
@@ -121,8 +134,8 @@ export default class Protocool
     update()
     {
         this.display.drawImage(this.c_border,0,0);
-        this.display.drawImage(this.c_colram,(this.computer["outer_width"]-this.computer["width"])/2,(this.computer["outer_height"]-this.computer["height"])/2);
-        this.display.drawImage(this.c_screen,(this.computer["outer_width"]-this.computer["width"])/2,(this.computer["outer_height"]-this.computer["height"])/2);
+        this.display.drawImage(this.c_colram,(this.computer["outer_width"]-this.computer["width"]*320/this.computer["width"])/2,(this.computer["outer_height"]-this.computer["height"])/2);
+        this.display.drawImage(this.c_screen,(this.computer["outer_width"]-this.computer["width"]*320/this.computer["width"])/2,(this.computer["outer_height"]-this.computer["height"])/2);
     }
 
     scale(factor)
@@ -287,8 +300,8 @@ export default class Protocool
         var y = Math.floor((event.clientY - rect.top) / this.zoom - y_offset);
         var xc = Math.floor(x/8);
         var yc = Math.floor(y/8);
-        var screen_ram = "$" + ("0"+(this.computer["screenram_address"] + yc*40 + xc).toString(16)).slice(-4);
-        var color_ram = "$" + ("0"+(this.computer["colram_address"] + yc*40 + xc).toString(16)).slice(-4);
+        var screen_ram = "$" + ("0"+(this.computer.screenram_address + yc*this.computer.columns + xc).toString(16)).slice(-4);
+        var color_ram = "$" + ("0"+(this.computer.colram_address + yc*this.computer.columns + xc).toString(16)).slice(-4);
         document.getElementById("mouse").innerHTML = "X:"+x + " Y:"+ y + " | XC:" + xc + " YC:" + yc + " | SR:"+ screen_ram + " | CR:"+ color_ram;
     }
 

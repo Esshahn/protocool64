@@ -5,6 +5,13 @@ body
     background-color: #111111;
 }
 
+canvas {  
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
 #container
 {
     
@@ -32,7 +39,7 @@ body
     font-family: 'Courier New', Courier, monospace;
     font-size: 80%;
     font-weight: bold;
-    line-height: 40%;
+    line-height: 100%;
     padding: 10px;
     border-bottom: 1px solid #777777;
 }
@@ -42,7 +49,7 @@ body
     font-family: 'Courier New', Courier, monospace;
     font-size: 80%;
     font-weight: bold;
-    line-height: 40%;
+    line-height: 60%;
 }
 
 #ui h1
